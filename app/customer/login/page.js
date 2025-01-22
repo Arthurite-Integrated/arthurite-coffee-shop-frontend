@@ -6,7 +6,7 @@ import Header from "../../../components/Header";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function VendorLogin() {
+export default function CustomerLogin() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,7 +25,7 @@ export default function VendorLogin() {
     e.preventDefault();
     setLoading(true);
     // API Integration
-    const url = "/api/signin";
+    const url = "/api/customer-login";
     try {
       const response = await axios.post(url, formData);
       const data = response.data;
@@ -37,15 +37,15 @@ export default function VendorLogin() {
       }
 
       setSuccess(data.message);
-      window.localStorage.setItem("token", data.data.token);
-      window.localStorage.setItem("email", data.data.email);
-      window.localStorage.setItem("name", data.data.name);
-      window.localStorage.setItem("id", data.data.id);
+      window.localStorage.setItem("customer_token", data.data.token);
+      window.localStorage.setItem("customer_email", data.data.email);
+      window.localStorage.setItem("customer_name", data.data.name);
+      window.localStorage.setItem("customer_id", data?.data?.id || null);
 
       setLoading(false);
 
       setTimeout(() => {
-        router.push("/vendor/dashboard");
+        router.push("/customer/dashboard");
       }, 1000);
     } catch (error) {
       console.log(error);
@@ -57,7 +57,7 @@ export default function VendorLogin() {
       <Header />
       <div className="container mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold text-center text-[#19381f] mb-8">
-          Vendor Login
+          Customer Login
         </h1>
         <p
           className={`${error ? "text-red-500" : "text-green-500"} text-center`}

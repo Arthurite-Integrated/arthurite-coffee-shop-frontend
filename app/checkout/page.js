@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "../../components/Header";
 import { useCartContext } from "../../components/CartProvider";
+import axios from "axios";
 
 export default function Checkout() {
   const { cart, clearCart } = useCartContext();
@@ -10,11 +11,54 @@ export default function Checkout() {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleSubmit = (e) => {
+  const items = cart.map((item) => ({
+    _id: item.id,
+    quantity: item.quantity,
+  }));
+
+  const clientID =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("customer_id")
+      : null;
+  // const clientID = "678879355184774bde508c17";
+
+  const formData = {
+    clientId: clientID,
+    items: items,
+    status: "Processing",
+  };
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would integrate with your payment processing API
-    setShowModal(true);
-    clearCart();
+
+    setLoading(true);
+    // API Integration
+    const url = "/api/create-order";
+    try {
+      const response = await axios.post(url, formData);
+      console.log(formData);
+      console.log(response);
+      const data = response.data;
+
+      if (data.status === 400) {
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+
+      setSuccess(data.message);
+
+      setLoading(false);
+
+      setShowModal(true);
+      clearCart();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -22,6 +66,9 @@ export default function Checkout() {
       <Header />
       <div className="container mx-auto px-6 py-8">
         <h1 className="text-3xl font-bold text-[#19381f] mb-8">Checkout</h1>
+        <p className={`${error ? "text-red-500" : "text-green-500"}`}>
+          {error || success}
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
@@ -97,7 +144,7 @@ export default function Checkout() {
                 type="submit"
                 className="w-full bg-[#19381f] text-white py-2 rounded hover:bg-[#19381f]/80"
               >
-                Place Order
+                {loading ? "Processing..." : "Place Order"}
               </button>
             </form>
           </div>

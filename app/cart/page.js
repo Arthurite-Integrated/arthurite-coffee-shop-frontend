@@ -3,9 +3,31 @@
 import Header from "../../components/Header";
 import { useCartContext } from "../../components/CartProvider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Cart() {
   const { cart, updateQuantity, removeFromCart } = useCartContext();
+  const items = cart.map((item) => ({
+    _id: item.id,
+    quantity: item.quantity,
+  }));
+
+  const clientID =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("customer_id") || "678879355184774bde508c17"
+      : null;
+
+  const formData = {
+    clientId: clientID,
+    items: items,
+    status: "Processing",
+  };
+
+  const router = useRouter();
+
+  const proceedToCheckout = () => {
+    router.push("/checkout");
+  };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -85,12 +107,13 @@ export default function Cart() {
             </div>
             <div className="mt-8">
               <p className="text-xl font-bold">Total: ${total.toFixed(2)}</p>
-              <Link
-                href="/checkout"
+              <button
+                type="buttom"
                 className="mt-4 inline-block bg-[#19381f] text-white px-6 py-3 rounded-lg text-lg hover:bg-[#19381f]/80"
+                onClick={proceedToCheckout}
               >
                 Proceed to Checkout
-              </Link>
+              </button>
             </div>
           </>
         )}

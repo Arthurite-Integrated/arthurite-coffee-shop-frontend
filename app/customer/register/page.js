@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import Header from "../../../components/Header";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function VendorLogin() {
+export default function CustomerRegister() {
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
   });
@@ -19,36 +19,29 @@ export default function VendorLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     // API Integration
-    const url = "/api/signin";
+    const url = "/api/customer-register";
     try {
       const response = await axios.post(url, formData);
       const data = response.data;
+
+      console.log(response.data);
 
       if (data.status === 400) {
         setError(data.message);
         setLoading(false);
         return;
       }
-
-      setSuccess(data.message);
-      window.localStorage.setItem("token", data.data.token);
-      window.localStorage.setItem("email", data.data.email);
-      window.localStorage.setItem("name", data.data.name);
-      window.localStorage.setItem("id", data.data.id);
-
+      setSuccess("Registration Successful, Proceed to login");
       setLoading(false);
-
-      setTimeout(() => {
-        router.push("/vendor/dashboard");
-      }, 1000);
     } catch (error) {
       console.log(error);
+      //   setError();
+      setLoading(false);
     }
   };
 
@@ -57,7 +50,7 @@ export default function VendorLogin() {
       <Header />
       <div className="container mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold text-center text-[#19381f] mb-8">
-          Vendor Login
+          Customer Registration
         </h1>
         <p
           className={`${error ? "text-red-500" : "text-green-500"} text-center`}
@@ -66,8 +59,22 @@ export default function VendorLogin() {
         </p>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
           <div className="mb-4">
+            <label htmlFor="name" className="block mb-2">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
+            />
+          </div>
+          <div className="mb-4">
             <label htmlFor="email" className="block mb-2">
-              Email
+              {"Email (Company/school email)"}
             </label>
             <input
               type="email"
@@ -76,7 +83,7 @@ export default function VendorLogin() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
             />
           </div>
           <div className="mb-4">
@@ -90,20 +97,21 @@ export default function VendorLogin() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
             />
           </div>
+
           <button
             type="submit"
             className="w-full bg-[#19381f] text-white py-2 rounded hover:bg-[#19381f]/80"
           >
-            {loading ? "Loading..." : "Log In"}
+            {loading ? "Loading..." : "Register"}
           </button>
         </form>
         <p className="text-center mt-4">
-          Don't have an account?{" "}
-          <Link href="/vendor/register" className="text-[#19381f]">
-            Register
+          Already have an account?{" "}
+          <Link href="/customer/login" className="text-[#19381f]">
+            Log in
           </Link>
         </p>
       </div>

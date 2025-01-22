@@ -1,64 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Header from "../../../components/Header";
+import axios from "axios";
 
 export default function VendorMenu() {
-  const [menuItems, setMenuItems] = useState([
-    {
-      id: 1,
-      name: "Coffee",
-      description: "Freshly brewed coffee",
-      price: 2.5,
-      category: "drinks",
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Croissant",
-      description: "Buttery and flaky",
-      price: 3.0,
-      category: "pastries",
-      inStock: true,
-    },
-    // Add more menu items as needed
-  ]);
+  const [menuItems, setMenuItems] = useState([]);
 
   const [newItem, setNewItem] = useState({
     name: "",
     description: "",
     price: "",
     category: "",
-    inStock: true,
+    quantity: "",
+    imageUrl: "",
   });
+
+  const fetchAllProduct = useCallback(() => {
+    const url = "/api/get-all-product";
+
+    axios
+      .get(url)
+      .then((res) => {
+        if (res.status === 200) {
+          setMenuItems(res.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching menu items:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetchAllProduct();
+  }, [fetchAllProduct]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewItem((prev) => ({ ...prev, [name]: value }));
+    setNewItem((prev) => ({
+      ...prev,
+      [name]: name === "price" || name === "quantity" ? Number(value) : value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+  const token =
+    typeof window !== "undefined" ? window.localStorage.getItem("token") : null;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMenuItems((prev) => [...prev, { ...newItem, id: Date.now() }]);
-    setNewItem({
-      name: "",
-      description: "",
-      price: "",
-      category: "",
-      inStock: true,
-    });
+    setLoading(true);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    const url = "/api/create-product";
+
+    try {
+      const res = await axios.post(url, newItem, { headers });
+
+      alert("Item added successfully!");
+      setLoading(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error("Error sending data:", error);
+
+      alert("Failed to add item. Please try again.");
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    setMenuItems((prev) => prev.filter((item) => item.id !== id));
-  };
+  const [deletingItems, setDeletingItems] = useState({});
 
-  const handleToggleStock = (id) => {
-    setMenuItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, inStock: !item.inStock } : item
-      )
-    );
+  const handleDelete = async (productId) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      id: productId,
+    };
+    const url = "/api/delete-product";
+    setDeletingItems((prev) => ({ ...prev, [productId]: true }));
+
+    try {
+      const res = await axios.delete(url, { headers });
+      alert("Product deleted successfully!");
+      window.location.reload(); // Refresh the list after successful deletion
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      alert("Failed to delete item. Please try again.");
+    } finally {
+      setDeletingItems((prev) => ({ ...prev, [productId]: false }));
+    }
   };
 
   return (
@@ -68,6 +100,7 @@ export default function VendorMenu() {
         <h1 className="text-3xl font-bold text-[#19381f] mb-8">
           Menu Management
         </h1>
+
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
@@ -109,14 +142,33 @@ export default function VendorMenu() {
               <option value="pastries">Pastries</option>
               {/* Add more categories as needed */}
             </select>
+            <input
+              type="number"
+              name="quantity"
+              value={newItem.quantity}
+              onChange={handleInputChange}
+              placeholder="Quantity"
+              className="px-3 py-2 border rounded"
+              required
+            />
+            <input
+              type="text"
+              name="imageUrl"
+              value={newItem.imageUrl}
+              onChange={handleInputChange}
+              placeholder="Image URL"
+              className="px-3 py-2 border rounded"
+              required
+            />
           </div>
           <button
             type="submit"
             className="mt-4 bg-[#19381f] text-white px-4 py-2 rounded hover:bg-[#19381f]/80"
           >
-            Add Item
+            {loading ? "Loading..." : "Add item"}
           </button>
         </form>
+
         <div className="bg-white shadow rounded-lg overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -134,7 +186,7 @@ export default function VendorMenu() {
                   Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Quantity
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -142,7 +194,7 @@ export default function VendorMenu() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {menuItems.map((item) => (
+              {menuItems?.map((item) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -155,23 +207,15 @@ export default function VendorMenu() {
                     {item.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => handleToggleStock(item.id)}
-                      className={`px-2 py-1 rounded ${
-                        item.inStock
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {item.inStock ? "In Stock" : "Out of Stock"}
-                    </button>
+                    {item.quantity}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="text-red-600 hover:text-red-900"
+                      disabled={deletingItems[item.id]}
                     >
-                      Delete
+                      {deletingItems[item.id] ? "Deleting..." : "Delete"}
                     </button>
                   </td>
                 </tr>
