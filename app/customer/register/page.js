@@ -5,13 +5,11 @@ import Link from "next/link";
 import Header from "../../../components/Header";
 import axios from "axios";
 
-export default function VendorRegister() {
+export default function CustomerRegister() {
   const [formData, setFormData] = useState({
-    username: "",
     name: "",
     email: "",
     password: "",
-    storeName: "",
   });
 
   const handleChange = (e) => {
@@ -26,7 +24,7 @@ export default function VendorRegister() {
     e.preventDefault();
     setLoading(true);
     // API Integration
-    const url = "/api/signup";
+    const url = "/api/customer-register";
     try {
       const response = await axios.post(url, formData);
       const data = response.data;
@@ -42,6 +40,8 @@ export default function VendorRegister() {
       setLoading(false);
     } catch (error) {
       console.log(error);
+      //   setError();
+      setLoading(false);
     }
   };
 
@@ -50,7 +50,7 @@ export default function VendorRegister() {
       <Header />
       <div className="container mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold text-center text-[#19381f] mb-8">
-          Vendor Registration
+          Customer Registration
         </h1>
         <p
           className={`${error ? "text-red-500" : "text-green-500"} text-center`}
@@ -58,20 +58,6 @@ export default function VendorRegister() {
           {error || success}
         </p>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-          <div className="mb-4">
-            <label htmlFor="username" className="block mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
-            />
-          </div>
           <div className="mb-4">
             <label htmlFor="name" className="block mb-2">
               Name
@@ -88,7 +74,7 @@ export default function VendorRegister() {
           </div>
           <div className="mb-4">
             <label htmlFor="email" className="block mb-2">
-              Email
+              {"Email (Company/school email)"}
             </label>
             <input
               type="email"
@@ -115,20 +101,6 @@ export default function VendorRegister() {
             />
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="storeName" className="block mb-2">
-              Store Name
-            </label>
-            <input
-              type="text"
-              id="storeName"
-              name="storeName"
-              value={formData.storeName}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
-            />
-          </div>
           <button
             type="submit"
             className="w-full bg-[#19381f] text-white py-2 rounded hover:bg-[#19381f]/80"
@@ -138,7 +110,7 @@ export default function VendorRegister() {
         </form>
         <p className="text-center mt-4">
           Already have an account?{" "}
-          <Link href="/vendor/login" className="text-[#19381f]">
+          <Link href="/customer/login" className="text-[#19381f]">
             Log in
           </Link>
         </p>

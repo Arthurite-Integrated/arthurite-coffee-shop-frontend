@@ -1,33 +1,101 @@
 "use client";
 
-import { useState } from "react";
-import Header from "../../../components/Header";
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import Header from "@/components/Header";
 
 export default function VendorOrders() {
-  const [activeTab, setActiveTab] = useState("pending");
+  const [orders, setOrders] = useState([]);
+  const [activeTab, setActiveTab] = useState("Processing");
+  const [loadingStates, setLoadingStates] = useState({});
+  const [messages, setMessages] = useState({});
 
-  // This data would come from your API in a real application
-  const orders = [
-    {
-      id: 1,
-      customer: "John Doe",
-      items: ["Coffee", "Croissant"],
-      total: 8.5,
-      status: "pending",
-      timestamp: "2023-05-20 09:30:00",
-    },
-    {
-      id: 2,
-      customer: "Jane Smith",
-      items: ["Tea", "Muffin"],
-      total: 6.75,
-      status: "completed",
-      timestamp: "2023-05-20 10:15:00",
-    },
-    // Add more orders as needed
-  ];
+  const getAllOrders = useCallback(() => {
+    const url = "/api/get-all-order";
+
+    axios
+      .get(url)
+      .then((res) => {
+        if (res.status === 200) {
+          setOrders(res.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching orders:", error);
+        alert("Failed to fetch orders. Please try again.");
+      });
+  }, []);
+
+  useEffect(() => {
+    getAllOrders();
+  }, [getAllOrders]);
 
   const filteredOrders = orders.filter((order) => order.status === activeTab);
+
+  const handleMarkAsCompleted = async (orderId) => {
+    setLoadingStates((prev) => ({ ...prev, [orderId]: "completing" }));
+    setMessages((prev) => ({ ...prev, [orderId]: "" }));
+
+    const config = {
+      method: "put",
+      url: "/api/modify-order",
+      headers: {
+        "Content-Type": "application/json",
+        "order-id": orderId,
+      },
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log(response.data.data);
+      setMessages((prev) => ({
+        ...prev,
+        [orderId]: "Order marked as completed",
+      }));
+      alert("Order marked as completed successfully");
+      getAllOrders();
+    } catch (error) {
+      console.log(error);
+      setMessages((prev) => ({
+        ...prev,
+        [orderId]: "Failed to mark order as completed",
+      }));
+      alert("Failed to mark order as completed. Please try again.");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [orderId]: "" }));
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    setLoadingStates((prev) => ({ ...prev, [orderId]: "deleting" }));
+    setMessages((prev) => ({ ...prev, [orderId]: "" }));
+
+    const config = {
+      method: "delete",
+      url: "/api/delete-order",
+      headers: {
+        "Content-Type": "application/json",
+        "order-id": orderId,
+      },
+    };
+
+    try {
+      const response = await axios.request(config);
+      console.log(response.data.data);
+      setMessages((prev) => ({
+        ...prev,
+        [orderId]: "Order deleted successfully",
+      }));
+      alert("Order deleted successfully");
+      getAllOrders();
+    } catch (error) {
+      console.log(error);
+      setMessages((prev) => ({ ...prev, [orderId]: "Failed to delete order" }));
+      alert("Failed to delete order. Please try again.");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [orderId]: "" }));
+    }
+  };
 
   return (
     <div>
@@ -39,21 +107,21 @@ export default function VendorOrders() {
         <div className="mb-4">
           <button
             className={`mr-4 ${
-              activeTab === "pending"
+              activeTab === "Processing"
                 ? "text-[#19381f] font-bold"
                 : "text-gray-500"
             }`}
-            onClick={() => setActiveTab("pending")}
+            onClick={() => setActiveTab("Processing")}
           >
-            Pending Orders
+            Processing Orders
           </button>
           <button
             className={`${
-              activeTab === "completed"
+              activeTab === "Completed"
                 ? "text-[#19381f] font-bold"
                 : "text-gray-500"
             }`}
-            onClick={() => setActiveTab("completed")}
+            onClick={() => setActiveTab("Completed")}
           >
             Completed Orders
           </button>
@@ -63,19 +131,22 @@ export default function VendorOrders() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
+                  Client Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Items
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
+                  Total Items
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Timestamp
+                  Total Price
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -85,24 +156,49 @@ export default function VendorOrders() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders.map((order) => (
                 <tr key={order.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{order.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {order.customer}
+                    {order.client ? order.client.name : "N/A"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {order.items.join(", ")}
+                    {order.items.map((item) => item.product.name).join(", ")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    ${order.total.toFixed(2)}
+                    {order.totalItems}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {order.timestamp}
+                    ${(order.totalPrice / 100).toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {order.status === "pending" && (
-                      <button className="text-[#19381f] hover:text-[#19381f]/80">
-                        Mark as Completed
+                    {new Date(order.orderDate).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {order.status}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {order.status === "Processing" && (
+                      <button
+                        className="text-[#19381f] hover:text-[#19381f]/80 mr-2 disabled:opacity-50"
+                        onClick={() => handleMarkAsCompleted(order.id)}
+                        disabled={loadingStates[order.id] === "completing"}
+                      >
+                        {loadingStates[order.id] === "completing"
+                          ? "Marking as Completed..."
+                          : "Mark as Completed"}
                       </button>
+                    )}
+                    <button
+                      className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                      onClick={() => handleDeleteOrder(order.id)}
+                      disabled={loadingStates[order.id] === "deleting"}
+                    >
+                      {loadingStates[order.id] === "deleting"
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+                    {messages[order.id] && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        {messages[order.id]}
+                      </p>
                     )}
                   </td>
                 </tr>

@@ -3,26 +3,30 @@
 import { useState } from "react";
 import Header from "../../components/Header";
 import { useCartContext } from "../../components/CartProvider";
+import axios from "axios";
 
 export default function Menu() {
   const { addToCart } = useCartContext();
-  const [menuItems] = useState([
-    {
-      id: 1,
-      name: "Coffee",
-      description: "Freshly brewed coffee",
-      price: 2.5,
-      category: "drinks",
-    },
-    {
-      id: 2,
-      name: "Croissant",
-      description: "Buttery and flaky",
-      price: 3.0,
-      category: "pastries",
-    },
-    // Add more menu items as needed
-  ]);
+  const [menuItems, setMenuItems] = useState([]);
+
+  const fetchAllProduct = () => {
+    const url = "/api/get-all-product";
+
+    axios
+      .get(url)
+      .then((res) => {
+        if (res.status === 200) {
+          setMenuItems(res.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching menu items:", error);
+      });
+  };
+
+  useState(() => {
+    fetchAllProduct();
+  }, []);
 
   const [quantities, setQuantities] = useState({});
 
@@ -47,7 +51,7 @@ export default function Menu() {
       <div className="container mx-auto px-6 py-8">
         <h1 className="text-3xl font-bold text-[#19381f] mb-8">Menu</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {menuItems.map((item) => (
+          {menuItems?.map((item) => (
             <div key={item.id} className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-2">{item.name}</h2>
               <p className="text-gray-600 mb-4">{item.description}</p>

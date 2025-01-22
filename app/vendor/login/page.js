@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Header from "../../../components/Header";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function VendorLogin() {
   const [formData, setFormData] = useState({
@@ -14,10 +16,40 @@ export default function VendorLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would integrate with your backend API
-    console.log("Form submitted:", formData);
+    setLoading(true);
+    // API Integration
+    const url = "/api/signin";
+    try {
+      const response = await axios.post(url, formData);
+      const data = response.data;
+
+      if (data.status === 400) {
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+
+      setSuccess(data.message);
+      window.localStorage.setItem("token", data.data.token);
+      window.localStorage.setItem("email", data.data.email);
+      window.localStorage.setItem("name", data.data.name);
+      window.localStorage.setItem("id", data.data.id);
+
+      setLoading(false);
+
+      setTimeout(() => {
+        router.push("/vendor/dashboard");
+      }, 1000);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -27,6 +59,11 @@ export default function VendorLogin() {
         <h1 className="text-3xl font-bold text-center text-[#19381f] mb-8">
           Vendor Login
         </h1>
+        <p
+          className={`${error ? "text-red-500" : "text-green-500"} text-center`}
+        >
+          {error || success}
+        </p>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
           <div className="mb-4">
             <label htmlFor="email" className="block mb-2">
@@ -60,7 +97,7 @@ export default function VendorLogin() {
             type="submit"
             className="w-full bg-[#19381f] text-white py-2 rounded hover:bg-[#19381f]/80"
           >
-            Log In
+            {loading ? "Loading..." : "Log In"}
           </button>
         </form>
         <p className="text-center mt-4">

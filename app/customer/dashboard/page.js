@@ -8,27 +8,26 @@ import Header from "@/components/Header";
 import Link from "next/link";
 import Modal from "@/components/Modal";
 
-export default function VendorDashboard() {
+export default function CustomerDashboard() {
   const router = useRouter();
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // This data would come from your API in a real application
-  const dashboardData = {
-    totalOrders: 150,
-    pendingOrders: 10,
-    completedOrders: 140,
-    earnings: 2500,
-  };
-
   const vendorID =
-    typeof window !== "undefined" ? window.localStorage.getItem("id") : null;
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("customer_id")
+      : null;
 
   const checkLocalStorage = useCallback(() => {
-    const requiredItems = ["token", "email", "name", "id"];
+    const requiredItems = [
+      "customer_token",
+      "customer_email",
+      "customer_name",
+      "customer_id",
+    ];
     for (const item of requiredItems) {
       if (!localStorage.getItem(item)) {
-        router.push("/vendor/login");
+        router.push("/customer/login");
         return false;
       }
     }
@@ -41,7 +40,7 @@ export default function VendorDashboard() {
     const config = {
       method: "get",
       maxBodyLength: Number.POSITIVE_INFINITY,
-      url: "/api/get-vendor-ses",
+      url: "/api/get-client-ses",
       headers: {
         "Content-Type": "application/json",
         "vendor-id": vendorID,
@@ -98,9 +97,9 @@ export default function VendorDashboard() {
       <Header />
       <div className="container mx-auto px-6 py-8">
         <h1 className="text-3xl font-bold text-[#19381f] mb-8">
-          Vendor Dashboard
+          Customer Dashboard
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard
             title="Total Orders"
             value={dashboardData.totalOrders}
@@ -117,26 +116,26 @@ export default function VendorDashboard() {
             title="Earnings"
             value={`$${dashboardData.earnings}`}
           />
-        </div>
+        </div> */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
-            href="/vendor/orders"
+            href="/menu"
             className="bg-[#19381f] text-white p-4 rounded text-center hover:bg-[#19381f]/80"
           >
-            Manage Orders
+            Order now
           </Link>
-          <Link
+          {/* <Link
             href="/vendor/menu"
             className="bg-[#19381f] text-white p-4 rounded text-center hover:bg-[#19381f]/80"
           >
             Manage Menu
-          </Link>
-          <Link
+          </Link> */}
+          {/* <Link
             href="/vendor/account"
             className="bg-[#19381f] text-white p-4 rounded text-center hover:bg-[#19381f]/80"
           >
             Account Settings
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
