@@ -102,7 +102,7 @@ export default function CustomerLogin() {
         </form>
         <p className="text-center mt-4">
           Don't have an account?{" "}
-          <Link href="/vendor/register" className="text-[#19381f]">
+          <Link href="/customer/register" className="text-[#19381f]">
             Register
           </Link>
         </p>

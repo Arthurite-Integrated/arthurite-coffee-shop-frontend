@@ -10,6 +10,7 @@ export default function CustomerRegister() {
     name: "",
     email: "",
     password: "",
+    organization: "",
   });
 
   const handleChange = (e) => {
@@ -74,13 +75,27 @@ export default function CustomerRegister() {
           </div>
           <div className="mb-4">
             <label htmlFor="email" className="block mb-2">
-              {"Email (Company/school email)"}
+              {"Email (Company/school)"}
             </label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="organization" className="block mb-2">
+              Organization/School
+            </label>
+            <input
+              type="text"
+              id="organization"
+              name="organization"
+              value={formData.organization}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded outline-none focus:ring-1 focus:ring-[#19381f]"
