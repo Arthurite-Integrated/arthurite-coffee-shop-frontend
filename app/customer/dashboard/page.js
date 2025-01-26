@@ -11,6 +11,7 @@ import Modal from "@/components/Modal";
 export default function CustomerDashboard() {
   const router = useRouter();
   const [verificationStatus, setVerificationStatus] = useState(null);
+  console.log("Verification Status", verificationStatus);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const vendorID =
@@ -51,6 +52,7 @@ export default function CustomerDashboard() {
       .request(config)
       .then((res) => {
         if (res.status === 200) {
+          console.log("Backend_response", res);
           setVerificationStatus(res.data.data.verificationStatus);
           if (res.data.data.verificationStatus === "Pending") {
             setIsModalOpen(true);
