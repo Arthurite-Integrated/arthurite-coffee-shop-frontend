@@ -11,7 +11,7 @@ import Modal from "@/components/Modal";
 export default function CustomerDashboard() {
   const router = useRouter();
   const [verificationStatus, setVerificationStatus] = useState(null);
-  console.log("Verification Status", verificationStatus);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const vendorID =
@@ -51,8 +51,8 @@ export default function CustomerDashboard() {
     axios
       .request(config)
       .then((res) => {
+        console.log(res.data.data);
         if (res.status === 200) {
-          console.log("Backend_response", res);
           setVerificationStatus(res.data.data.verificationStatus);
           if (res.data.data.verificationStatus === "Pending") {
             setIsModalOpen(true);
@@ -76,7 +76,7 @@ export default function CustomerDashboard() {
         <Header />
         <div className="container mx-auto px-6 py-8">
           <h1 className="text-3xl font-bold text-[#19381f] mb-8">
-            Vendor Dashboard
+            Customer Dashboard
           </h1>
           <p>Please verify your email to access the dashboard.</p>
         </div>

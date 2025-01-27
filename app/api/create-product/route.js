@@ -4,7 +4,7 @@ export async function POST(req) {
   const payload = await req.json();
   const token = req.headers.get("Authorization");
 
-  const base_url = `http://localhost:3003/api/products`;
+  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/products`;
 
   const myHeaders = new Headers();
   myHeaders.append("Authorization", token);

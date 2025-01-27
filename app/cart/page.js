@@ -2,11 +2,11 @@
 
 import Header from "../../components/Header";
 import { useCartContext } from "../../components/CartProvider";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Cart() {
   const { cart, updateQuantity, removeFromCart } = useCartContext();
+
   const items = cart.map((item) => ({
     _id: item.id,
     quantity: item.quantity,

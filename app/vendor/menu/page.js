@@ -23,6 +23,7 @@ export default function VendorMenu() {
       .get(url)
       .then((res) => {
         if (res.status === 200) {
+          console.log(res.data);
           setMenuItems(res.data.data);
         }
       })

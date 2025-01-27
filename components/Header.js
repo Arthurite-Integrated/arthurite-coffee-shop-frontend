@@ -12,9 +12,13 @@ export default function Header() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCartContext();
-  const customerName = window.localStorage.getItem("customer_name");
+  const customerName =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("customer_name")
+      : null;
 
-  const vendorName = window.localStorage.getItem("name");
+  const vendorName =
+    typeof window !== "undefined" ? window.localStorage.getItem("name") : null;
 
   const numOfCartItem = cart.reduce((total, item) => total + item.quantity, 0);
   const clientLogout = () => {
@@ -145,6 +149,13 @@ export default function Header() {
             >
               Order Now
             </Link>
+            <button
+              type="button"
+              className="bg-[#19381f] text-white px-4 py-2 rounded hover:bg-[#19381f]/80"
+              onClick={clientLogout}
+            >
+              Logout
+            </button>
           </div>
         )}
       </nav>
