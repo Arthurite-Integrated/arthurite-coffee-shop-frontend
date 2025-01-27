@@ -4,7 +4,7 @@ export async function DELETE(req) {
   const token = req.headers.get("Authorization");
   const id = req.headers.get("id");
 
-  const base_url = `http://localhost:3003/api/products/${id}`;
+  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/products/${id}`;
 
   const myHeaders = new Headers();
   myHeaders.append("Authorization", token);
@@ -18,7 +18,6 @@ export async function DELETE(req) {
 
   try {
     const response = await fetch(base_url, requestOptions);
-    console.log(response);
 
     // Extract the actual data from the response
     // const data = await response.json();

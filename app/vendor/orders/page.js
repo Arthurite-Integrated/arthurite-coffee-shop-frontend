@@ -47,7 +47,7 @@ export default function VendorOrders() {
 
     try {
       const response = await axios.request(config);
-      console.log(response.data.data);
+
       setMessages((prev) => ({
         ...prev,
         [orderId]: "Order marked as completed",
@@ -55,7 +55,7 @@ export default function VendorOrders() {
       alert("Order marked as completed successfully");
       getAllOrders();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setMessages((prev) => ({
         ...prev,
         [orderId]: "Failed to mark order as completed",
@@ -81,7 +81,7 @@ export default function VendorOrders() {
 
     try {
       const response = await axios.request(config);
-      console.log(response.data.data);
+
       setMessages((prev) => ({
         ...prev,
         [orderId]: "Order deleted successfully",
@@ -89,7 +89,7 @@ export default function VendorOrders() {
       alert("Order deleted successfully");
       getAllOrders();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setMessages((prev) => ({ ...prev, [orderId]: "Failed to delete order" }));
       alert("Failed to delete order. Please try again.");
     } finally {

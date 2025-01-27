@@ -30,8 +30,6 @@ export default function CustomerRegister() {
       const response = await axios.post(url, formData);
       const data = response.data;
 
-      console.log(response.data);
-
       if (data.status === 400) {
         setError(data.message);
         setLoading(false);
@@ -40,7 +38,7 @@ export default function CustomerRegister() {
       setSuccess("Registration Successful, Proceed to login");
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       //   setError();
       setLoading(false);
     }

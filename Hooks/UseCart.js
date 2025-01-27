@@ -6,14 +6,21 @@ export function useCart() {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
+    const savedCart =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("cart")
+        : null;
+    // localStorage.getItem("cart");
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    typeof window !== "undefined"
+      ? window.localStorage.setItem("cart", JSON.stringify(cart))
+      : null;
+    // localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item) => {

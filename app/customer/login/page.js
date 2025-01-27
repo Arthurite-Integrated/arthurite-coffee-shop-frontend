@@ -37,6 +37,7 @@ export default function CustomerLogin() {
       }
 
       setSuccess(data.message);
+      console.log(data.data);
       window.localStorage.setItem("customer_token", data.data.token);
       window.localStorage.setItem("customer_email", data.data.email);
       window.localStorage.setItem("customer_name", data.data.name);
@@ -48,7 +49,7 @@ export default function CustomerLogin() {
         router.push("/customer/dashboard");
       }, 1000);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

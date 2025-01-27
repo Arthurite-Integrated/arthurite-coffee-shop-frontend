@@ -17,6 +17,7 @@ export default function CustomerOrderStatus() {
       .then((res) => {
         if (res.status === 200) {
           const newOrders = res.data.data;
+
           setNewlyCompletedOrders(
             newOrders.filter(
               (newOrder) =>

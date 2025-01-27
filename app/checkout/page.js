@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "../../components/Header";
 import { useCartContext } from "../../components/CartProvider";
 import axios from "axios";
-
+// import { useWindow, useWindowWidth, useWindowHeight } from "@/hooks/use-window"
 export default function Checkout() {
   const { cart, clearCart } = useCartContext();
   const [showModal, setShowModal] = useState(false);
@@ -40,8 +40,7 @@ export default function Checkout() {
     const url = "/api/create-order";
     try {
       const response = await axios.post(url, formData);
-      console.log(formData);
-      console.log(response);
+
       const data = response.data;
 
       if (data.status === 400) {
@@ -57,7 +56,7 @@ export default function Checkout() {
       setShowModal(true);
       clearCart();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

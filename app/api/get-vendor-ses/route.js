@@ -5,8 +5,7 @@ export async function GET(req) {
   // search for id in header
 
   const id = req.headers.get("vendor-id");
-  console.log(id);
-  const base_url = `http://localhost:3003/api/users/verification/${id}`;
+  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/users/verification/${id}`;
 
   const requestOptions = {
     method: "GET",

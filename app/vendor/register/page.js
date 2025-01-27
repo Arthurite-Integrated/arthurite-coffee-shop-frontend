@@ -31,8 +31,6 @@ export default function VendorRegister() {
       const response = await axios.post(url, formData);
       const data = response.data;
 
-      console.log(response.data);
-
       if (data.status === 400) {
         setError(data.message);
         setLoading(false);
@@ -41,7 +39,7 @@ export default function VendorRegister() {
       setSuccess("Registration Successful, Proceed to login");
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

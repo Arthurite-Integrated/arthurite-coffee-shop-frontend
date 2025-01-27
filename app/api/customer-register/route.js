@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   const payload = await req.json();
 
-  const base_url = `http://localhost:3003/api/clients`;
+  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/clients`;
 
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
