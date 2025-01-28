@@ -4,7 +4,7 @@ export async function DELETE(req) {
   const token = req.headers.get("Authorization");
   const id = req.headers.get("id");
 
-  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/products/${id}`;
+  const base_url = `https://2rzeoqz8s6.execute-api.us-east-1.amazonaws.com/prod/api/products/${id}`;
 
   const myHeaders = new Headers();
   myHeaders.append("Authorization", token);

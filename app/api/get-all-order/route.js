@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
-  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/orders`;
+  const base_url = `https://2rzeoqz8s6.execute-api.us-east-1.amazonaws.com/prod/api/orders`;
 
   const requestOptions = {
     method: "GET",

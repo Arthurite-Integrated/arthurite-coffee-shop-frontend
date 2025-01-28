@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   const payload = await req.json();
 
-  const base_url = `https://iirtd33w1b.execute-api.us-east-1.amazonaws.com/prod/api/client-login`;
+  const base_url = `https://2rzeoqz8s6.execute-api.us-east-1.amazonaws.com/prod/api/client-login`;
 
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
