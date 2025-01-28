@@ -136,11 +136,11 @@ export default function Header() {
         {isMenuOpen && (
           <div className="lg:hidden mt-4 flex flex-col gap-4">
             <Link
-              href="/vendor/login"
+              href="/customer/login"
               className="bg-white text-[#19381f] border border-[#19381f] px-4 py-2 rounded hover:bg-[#19381f]/80 text-center"
               onClick={toggleMenu}
             >
-              Vendor Login
+              Customer Login
             </Link>
             <Link
               href="/menu"
@@ -149,13 +149,15 @@ export default function Header() {
             >
               Order Now
             </Link>
-            <button
-              type="button"
-              className="bg-[#19381f] text-white px-4 py-2 rounded hover:bg-[#19381f]/80"
-              onClick={clientLogout}
-            >
-              Logout
-            </button>
+            {customerName !== "" && customerName !== null && (
+              <button
+                type="button"
+                className="bg-[#19381f] text-white px-4 py-2 rounded hover:bg-[#19381f]/80"
+                onClick={clientLogout}
+              >
+                Logout
+              </button>
+            )}
           </div>
         )}
       </nav>
