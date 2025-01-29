@@ -50,7 +50,7 @@ export default function Header() {
           <Link
             href={
               vendorName !== "" && vendorName !== null
-                ? "/vendor/dashboard"
+                ? "//customer/dashboard"
                 : customerName !== "" && customerName !== null
                 ? "/customer/dashboard"
                 : "/"
